@@ -25,20 +25,25 @@ protected:
 	/** Input handlers*/
 	void OnShootPressed();
 	void OnShootReleased();
+	void MoveX(float value);
+	void MoveY(float value);
 
 	void ManageRotation();
 	void ManageShooting();
+	void ManageMovement();
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Player movement") //This acts as gun cooldown also
 		float rotationTime = .2f;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Player movement")
-		float moveSpeed = 0.f;
+		float moveSpeed = 600.f;
 
 	bool isRotating = false;
 	FRotator targetRotation;
 	FRotator originalRotation;
 	float rotTimer = 0.f;
+
+	FVector direction;
 
 	bool isShooting = false;
 };

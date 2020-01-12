@@ -29,6 +29,9 @@ void ATDShooterPlayerController::PlayerTick(float DeltaTime)
 		isRotating = false;
 		ManageShooting();
 	}
+
+	ManageMovement();
+	
 }
 
 void ATDShooterPlayerController::SetupInputComponent()
@@ -39,69 +42,12 @@ void ATDShooterPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Shoot", IE_Pressed, this, &ATDShooterPlayerController::OnShootPressed);
 	InputComponent->BindAction("Shoot", IE_Released, this, &ATDShooterPlayerController::OnShootReleased);
 	
+	InputComponent->BindAxis("MoveX", this, &ATDShooterPlayerController::MoveX);
+	InputComponent->BindAxis("MoveY", this, &ATDShooterPlayerController::MoveY);
+	
 
 }
 
-//void ATDShooterPlayerController::OnResetVR()
-//{
-//	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-//}
-//
-//void ATDShooterPlayerController::MoveToMouseCursor()
-//{
-//	if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
-//	{
-//		if (ATDShooterCharacter* MyPawn = Cast<ATDShooterCharacter>(GetPawn()))
-//		{
-//			if (MyPawn->GetCursorToWorld())
-//			{
-//				UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, MyPawn->GetCursorToWorld()->GetComponentLocation());
-//			}
-//		}
-//	}
-//	else
-//	{
-//		// Trace to see what is under the mouse cursor
-//		FHitResult Hit;
-//		GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-//
-//		if (Hit.bBlockingHit)
-//		{
-//			// We hit something, move there
-//			SetNewMoveDestination(Hit.ImpactPoint);
-//		}
-//	}
-//}
-//
-//void ATDShooterPlayerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location)
-//{
-//	FVector2D ScreenSpaceLocation(Location);
-//
-//	// Trace to see what is under the touch location
-//	FHitResult HitResult;
-//	GetHitResultAtScreenPosition(ScreenSpaceLocation, CurrentClickTraceChannel, true, HitResult);
-//	if (HitResult.bBlockingHit)
-//	{
-//		// We hit something, move there
-//		SetNewMoveDestination(HitResult.ImpactPoint);
-//	}
-//}
-//
-//void ATDShooterPlayerController::SetNewMoveDestination(const FVector DestLocation)
-//{
-//	APawn* const MyPawn = GetPawn();
-//	if (MyPawn)
-//	{
-//		float const Distance = FVector::Dist(DestLocation, MyPawn->GetActorLocation());
-//
-//		// We need to issue move command only if far enough in order for walk animation to play correctly
-//		if ((Distance > 120.0f))
-//		{
-//			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
-//		}
-//	}
-//}
-//
 void ATDShooterPlayerController::OnShootPressed()
 {
 	isShooting = true;
@@ -111,6 +57,16 @@ void ATDShooterPlayerController::OnShootPressed()
 void ATDShooterPlayerController::OnShootReleased()
 {
 	isShooting = false;
+}
+
+void ATDShooterPlayerController::MoveX(float value)
+{
+	direction.Y = value;
+}
+
+void ATDShooterPlayerController::MoveY(float value)
+{
+	direction.X = value;
 }
 
 void ATDShooterPlayerController::ManageRotation()
@@ -141,6 +97,21 @@ void ATDShooterPlayerController::ManageShooting()
 		FVector Forward = hitResult.ImpactPoint - GetPawn()->GetActorLocation();
 		targetRotation = UKismetMathLibrary::MakeRotFromXZ(Forward, FVector(0.f, 0.f, 1.f));
 		originalRotation = GetPawn()->GetActorRotation();
+	}
+}
+
+void ATDShooterPlayerController::ManageMovement()
+{
+	direction.Normalize();
+	GetCharacter()->GetCapsuleComponent()->SetPhysicsLinearVelocity(direction * moveSpeed);
+	if (!isShooting)
+	{
+		FRotator rot = GetCharacter()->GetCapsuleComponent()->GetComponentRotation();		
+		FRotator newRot = UKismetMathLibrary::MakeRotFromXZ(direction, FVector(0.f, 0.f, 1.f));
+
+		newRot = FMath::Lerp(rot, newRot, 0.1f);
+
+		GetPawn()->SetActorRotation(newRot);
 	}
 }
 
