@@ -9,11 +9,21 @@
 
 #include <TDShooter\Utils.h>
 #include <Runtime\Engine\Classes\Kismet\KismetMathLibrary.h>
+#include <TDShooter\Shot.h>
 
 ATDShooterPlayerController::ATDShooterPlayerController()
 {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
+}
+
+void ATDShooterPlayerController::BeginPlay()
+{
+	character = (ATDShooterCharacter*)GetCharacter();
+	for (size_t i = 0; i < SHOT_POOL_SIZE; ++i)
+	{
+		shotPool.push(GetWorld()->SpawnActor<AShot>(character->GetShotBP(), SHOT_POOL_WAITING_ZONE, FRotator::ZeroRotator));
+	}
 }
 
 void ATDShooterPlayerController::PlayerTick(float DeltaTime)
@@ -23,11 +33,14 @@ void ATDShooterPlayerController::PlayerTick(float DeltaTime)
 	if (rotTimer > 0.f) {
 		rotTimer -= DeltaTime;
 		ManageRotation();
+		if (rotTimer < 0.f)
+		{
+			Shoot();
+		}
 	}
-	else
+	else if (isShooting)
 	{
-		isRotating = false;
-		ManageShooting();
+		ManageAiming();
 	}
 
 	ManageMovement();
@@ -51,7 +64,6 @@ void ATDShooterPlayerController::SetupInputComponent()
 void ATDShooterPlayerController::OnShootPressed()
 {
 	isShooting = true;
-	
 }
 
 void ATDShooterPlayerController::OnShootReleased()
@@ -77,12 +89,10 @@ void ATDShooterPlayerController::ManageRotation()
 	GetPawn()->SetActorRotation(newRot);
 }
 
-void ATDShooterPlayerController::ManageShooting()
+void ATDShooterPlayerController::ManageAiming()
 {
-	if (isRotating || !isShooting)
-		return;
+	
 	rotTimer = rotationTime;
-	isRotating = true;
 
 	float locationX;
 	float locationY;
@@ -97,14 +107,15 @@ void ATDShooterPlayerController::ManageShooting()
 		FVector Forward = hitResult.ImpactPoint - GetPawn()->GetActorLocation();
 		targetRotation = UKismetMathLibrary::MakeRotFromXZ(Forward, FVector(0.f, 0.f, 1.f));
 		originalRotation = GetPawn()->GetActorRotation();
-	}
+	}	
 }
 
 void ATDShooterPlayerController::ManageMovement()
 {
 	direction.Normalize();
-	GetCharacter()->GetCapsuleComponent()->SetPhysicsLinearVelocity(direction * moveSpeed);
-	if (!isShooting)
+	character->GetCapsuleComponent()->SetPhysicsLinearVelocity(direction * moveSpeed);
+	
+	if (!isShooting && direction.Size() > 0.f) // look in move direction
 	{
 		FRotator rot = GetCharacter()->GetCapsuleComponent()->GetComponentRotation();		
 		FRotator newRot = UKismetMathLibrary::MakeRotFromXZ(direction, FVector(0.f, 0.f, 1.f));
@@ -113,5 +124,14 @@ void ATDShooterPlayerController::ManageMovement()
 
 		GetPawn()->SetActorRotation(newRot);
 	}
+}
+
+void ATDShooterPlayerController::Shoot()
+{
+	USceneComponent* shotOrigin = character->GetShotOrigin();
+	AShot* shot = shotPool.front();
+	shot->Go(shotOrigin->GetForwardVector(), shotOrigin->GetComponentLocation());
+	shotPool.pop();
+	shotPool.push(shot);
 }
 

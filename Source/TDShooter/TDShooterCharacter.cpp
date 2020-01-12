@@ -17,17 +17,6 @@ ATDShooterCharacter::ATDShooterCharacter()
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// Don't rotate character to camera direction
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
-
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
-	GetCharacterMovement()->bConstrainToPlane = true;
-	GetCharacterMovement()->bSnapToPlaneAtStart = true;
-
 	// Create a camera boom...
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -52,6 +41,10 @@ ATDShooterCharacter::ATDShooterCharacter()
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 
+	//Create shot origin
+	shotOrigin = CreateDefaultSubobject<USceneComponent>("ShotOrigin");
+	shotOrigin->SetupAttachment(RootComponent);
+
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -61,7 +54,6 @@ void ATDShooterCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-	GetCharacterMovement()->ConsumeInputVector();
 
 	if (CursorToWorld != nullptr)
 	{

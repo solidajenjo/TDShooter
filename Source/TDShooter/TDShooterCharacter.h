@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "TDShooterCharacter.generated.h"
 
+class AShot;
+
 UCLASS(Blueprintable)
 class ATDShooterCharacter : public ACharacter
 {
@@ -24,17 +26,26 @@ public:
 	/** Returns CursorToWorld subobject **/
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 
+	FORCEINLINE class USceneComponent* GetShotOrigin() { return shotOrigin; }
+	FORCEINLINE class TSubclassOf<AShot> GetShotBP() { return ShotBP; }
+
 private:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* TopDownCameraComponent;
+		class UCameraComponent* TopDownCameraComponent;
 
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+		class USpringArmComponent* CameraBoom;
 
 	/** A decal that projects to the cursor location. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UDecalComponent* CursorToWorld;
+		class UDecalComponent* CursorToWorld;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class USceneComponent* shotOrigin;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Shot blueprint")
+		TSubclassOf<AShot> ShotBP;
 };
 

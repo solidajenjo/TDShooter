@@ -4,7 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include <queue>
+
 #include "TDShooterPlayerController.generated.h"
+
+#define SHOT_POOL_SIZE 15
+#define SHOT_POOL_WAITING_ZONE FVector(10000.f, 10000.f, 10000.f)
+
+class ATDShooterCharacter;
+class AShot;
 
 UCLASS()
 class ATDShooterPlayerController : public APlayerController
@@ -15,6 +23,9 @@ public:
 	ATDShooterPlayerController();
 
 protected:
+
+	void BeginPlay() override;
+
 
 	// Begin PlayerController interface
 	virtual void PlayerTick(float DeltaTime) override;
@@ -29,16 +40,18 @@ protected:
 	void MoveY(float value);
 
 	void ManageRotation();
-	void ManageShooting();
+	void ManageAiming();
 	void ManageMovement();
+	void Shoot();
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Player movement") //This acts as gun cooldown also
-		float rotationTime = .2f;
+		float rotationTime = .4f;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Player movement")
 		float moveSpeed = 600.f;
 
-	bool isRotating = false;
+	ATDShooterCharacter* character = nullptr;
+
 	FRotator targetRotation;
 	FRotator originalRotation;
 	float rotTimer = 0.f;
@@ -46,6 +59,7 @@ protected:
 	FVector direction;
 
 	bool isShooting = false;
+	std::queue<AShot*> shotPool;
 };
 
 
