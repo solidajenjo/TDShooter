@@ -41,7 +41,7 @@ protected:
 
 	void ManageRotation();
 	void ManageAiming();
-	void ManageMovement();
+	void ManageMovement(float dt);
 	void Shoot();
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Player movement") //This acts as gun cooldown also

@@ -24,6 +24,7 @@ void ATDShooterPlayerController::BeginPlay()
 	{
 		shotPool.push(GetWorld()->SpawnActor<AShot>(character->GetShotBP(), SHOT_POOL_WAITING_ZONE, FRotator::ZeroRotator));
 	}
+
 }
 
 void ATDShooterPlayerController::PlayerTick(float DeltaTime)
@@ -43,7 +44,7 @@ void ATDShooterPlayerController::PlayerTick(float DeltaTime)
 		ManageAiming();
 	}
 
-	ManageMovement();
+	ManageMovement(DeltaTime);
 	
 }
 
@@ -110,7 +111,7 @@ void ATDShooterPlayerController::ManageAiming()
 	}	
 }
 
-void ATDShooterPlayerController::ManageMovement()
+void ATDShooterPlayerController::ManageMovement(float dt)
 {
 	direction.Normalize();
 	character->GetCapsuleComponent()->SetPhysicsLinearVelocity(direction * moveSpeed);
@@ -120,7 +121,7 @@ void ATDShooterPlayerController::ManageMovement()
 		FRotator rot = character->GetCapsuleComponent()->GetComponentRotation();		
 		FRotator newRot = UKismetMathLibrary::MakeRotFromXZ(direction, FVector(0.f, 0.f, 1.f));
 
-		newRot = FMath::Lerp(rot, newRot, 0.1f);
+		newRot = FMath::Lerp(rot, newRot, dt * 10.f);
 
 		GetPawn()->SetActorRotation(newRot);
 	}

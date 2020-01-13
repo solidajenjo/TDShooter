@@ -7,6 +7,7 @@
 #include "TDShooterCharacter.generated.h"
 
 class AShot;
+class UWidgetComponent;
 
 UCLASS(Blueprintable)
 class ATDShooterCharacter : public ACharacter
@@ -29,6 +30,17 @@ public:
 	FORCEINLINE class USceneComponent* GetShotOrigin() { return shotOrigin; }
 	FORCEINLINE class TSubclassOf<AShot> GetShotBP() { return ShotBP; }
 
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Player stats")
+		float totalLife = 100.f;
+	UPROPERTY(VisibleAnyWhere, BlueprintReadWrite, Category = "Player stats")
+		float lifePercent = .1f;
+
+	float lifeAmount = 0.f;
+	
+	void BeginPlay() override;
+
+	void TakeDamage(float damage);
+
 private:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -47,5 +59,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Shot blueprint")
 		TSubclassOf<AShot> ShotBP;
+
+
 };
 

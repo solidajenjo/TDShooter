@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -31,7 +32,7 @@ ATDShooterCharacter::ATDShooterCharacter()
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Create a decal in the world to show the cursor's location
-	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
+	CursorToWorld = CreateDefaultSubobject<UDecalComponent>(TEXT("CursorToWorld"));
 	CursorToWorld->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/TopDownCPP/Blueprints/M_Cursor_Decal.M_Cursor_Decal'"));
 	if (DecalMaterialAsset.Succeeded())
@@ -42,8 +43,9 @@ ATDShooterCharacter::ATDShooterCharacter()
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 
 	//Create shot origin
-	shotOrigin = CreateDefaultSubobject<USceneComponent>("ShotOrigin");
+	shotOrigin = CreateDefaultSubobject<USceneComponent>(TEXT("ShotOrigin"));
 	shotOrigin->SetupAttachment(RootComponent);
+
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -67,4 +69,18 @@ void ATDShooterCharacter::Tick(float DeltaSeconds)
 			CursorToWorld->SetWorldRotation(CursorR);
 		}
 	}
+}
+
+void ATDShooterCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	lifeAmount = totalLife;
+	lifePercent = 1.f;
+}
+
+void ATDShooterCharacter::TakeDamage(float damage)
+{
+	lifeAmount -= damage;
+	lifeAmount = FMath::Clamp(lifeAmount, 0.f, totalLife);
+	lifePercent = lifeAmount / totalLife;
 }

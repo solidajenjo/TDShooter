@@ -17,7 +17,7 @@ AShot::AShot()
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = mesh;
 	
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleSystemClass(TEXT("ParticleSystem'/Game/TopDownCPP/ParticleSystems/PT_ShotExplosion.PT_ShotExplosion'"));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleSystemClass(TEXT("ParticleSystem'/Game/InfinityBladeEffects/Effects/FX_Monsters/FX_Monster_Elemental/ICE/P_Elemental_Proj_Impact_Ice.P_Elemental_Proj_Impact_Ice'"));
 	particle = ParticleSystemClass.Object;		
 
 }
