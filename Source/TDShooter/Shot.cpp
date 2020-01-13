@@ -18,7 +18,7 @@ AShot::AShot()
 	RootComponent = mesh;
 	
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleSystemClass(TEXT("ParticleSystem'/Game/TopDownCPP/ParticleSystems/PT_ShotExplosion.PT_ShotExplosion'"));
-	Particle = ParticleSystemClass.Object;		
+	particle = ParticleSystemClass.Object;		
 
 }
 
@@ -33,11 +33,17 @@ void AShot::BeginPlay()
 	mesh->SetNotifyRigidBodyCollision(true);
 
 	mesh->OnComponentHit.AddDynamic(this, &AShot::shotHit);
+
+	//TArray<UParticleSystemComponent> pS;
+	//GetComponents<UParticleSystemComponent>(pS);
 }
 
 void AShot::shotHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, GetActorLocation());	
+	if (OtherComp->ComponentHasTag("Shot")) //Avoid shot pool particle spawning
+		return;
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), particle, GetActorLocation());	
+	mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 	SetActorLocation(SHOT_POOL_WAITING_ZONE);
 }
 
@@ -45,6 +51,7 @@ void AShot::Go(const FVector& direction, const FVector& position)
 {
 	mesh->SetWorldLocation(position);
 	mesh->SetPhysicsLinearVelocity(direction * shotSpeed);
+	mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 	FRotator newRot = UKismetMathLibrary::MakeRotFromXZ(direction, FVector(0.f, 0.f, 1.f));
 
 	SetActorRotation(newRot);

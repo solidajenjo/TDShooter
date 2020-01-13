@@ -39,6 +39,8 @@ protected:
 	
 	ATDShooterPlayerController* owner = nullptr;
 
-	UParticleSystem* Particle;
+	UParticleSystem* particle = nullptr;
+
+	UParticleSystemComponent* trail = nullptr;
 
 };

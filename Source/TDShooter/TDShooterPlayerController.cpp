@@ -86,7 +86,7 @@ void ATDShooterPlayerController::ManageRotation()
 	float alpha = rotTimer / rotationTime;
 	FRotator newRot = FMath::Lerp(targetRotation, originalRotation, alpha);
 
-	GetPawn()->SetActorRotation(newRot);
+	character->SetActorRotation(newRot);
 }
 
 void ATDShooterPlayerController::ManageAiming()
@@ -103,8 +103,8 @@ void ATDShooterPlayerController::ManageAiming()
 	const bool bTraceComplex = false;
 	if (GetHitResultAtScreenPosition(mousePosition, ECC_Visibility, bTraceComplex, hitResult) == true)
 	{
-		hitResult.ImpactPoint.Z = GetPawn()->GetActorLocation().Z;
-		FVector Forward = hitResult.ImpactPoint - GetPawn()->GetActorLocation();
+		hitResult.ImpactPoint.Z = character->GetActorLocation().Z;
+		FVector Forward = hitResult.ImpactPoint - character->GetActorLocation();
 		targetRotation = UKismetMathLibrary::MakeRotFromXZ(Forward, FVector(0.f, 0.f, 1.f));
 		originalRotation = GetPawn()->GetActorRotation();
 	}	
@@ -117,7 +117,7 @@ void ATDShooterPlayerController::ManageMovement()
 	
 	if (!isShooting && direction.Size() > 0.f) // look in move direction
 	{
-		FRotator rot = GetCharacter()->GetCapsuleComponent()->GetComponentRotation();		
+		FRotator rot = character->GetCapsuleComponent()->GetComponentRotation();		
 		FRotator newRot = UKismetMathLibrary::MakeRotFromXZ(direction, FVector(0.f, 0.f, 1.f));
 
 		newRot = FMath::Lerp(rot, newRot, 0.1f);
