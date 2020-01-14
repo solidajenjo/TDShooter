@@ -6,6 +6,7 @@
 #include <TDShooter\Utils.h>
 #include <Runtime\Engine\Classes\Kismet\KismetMathLibrary.h>
 #include <TDShooter\TDShooterPlayerController.h>
+#include <TDShooter\EnemyAICharacter.h>
 
 
 // Sets default values
@@ -42,6 +43,11 @@ void AShot::shotHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrim
 {
 	if (OtherComp->ComponentHasTag("Shot")) //Avoid shot pool particle spawning
 		return;
+	AEnemyAICharacter* enemy = Cast<AEnemyAICharacter>(OtherActor);
+	if (enemy)
+	{
+		enemy->TakeDamage_(shotDamage);
+	}
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), particle, GetActorLocation());	
 	mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 	SetActorLocation(SHOT_POOL_WAITING_ZONE);

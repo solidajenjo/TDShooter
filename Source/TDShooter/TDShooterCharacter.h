@@ -39,7 +39,7 @@ public:
 	
 	void BeginPlay() override;
 
-	void TakeDamage(float damage);
+	void TakeDamage_(float damage);
 
 private:
 	/** Top down camera */

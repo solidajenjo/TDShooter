@@ -5,7 +5,6 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -78,7 +77,7 @@ void ATDShooterCharacter::BeginPlay()
 	lifePercent = 1.f;
 }
 
-void ATDShooterCharacter::TakeDamage(float damage)
+void ATDShooterCharacter::TakeDamage_(float damage)
 {
 	lifeAmount -= damage;
 	lifeAmount = FMath::Clamp(lifeAmount, 0.f, totalLife);

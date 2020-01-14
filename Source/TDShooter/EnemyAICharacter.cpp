@@ -5,6 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include <TDShooter\Utils.h>
 #include <TDShooter\TDShooterCharacter.h>
+#include <TDShooter\EnemySpawner.h>
+
 
 // Sets default values
 AEnemyAICharacter::AEnemyAICharacter()
@@ -14,15 +16,38 @@ AEnemyAICharacter::AEnemyAICharacter()
 }
 
 
+void AEnemyAICharacter::TakeDamage_(float damage)
+{
+	lifeAmount -= damage;
+	lifeAmount = FMath::Clamp(lifeAmount, 0.f, totalLife);
+	lifePercent = lifeAmount / totalLife;
+}
+
+void AEnemyAICharacter::Reset()
+{
+	lifeAmount = totalLife;
+	lifePercent = 1.f;
+	isActive = true;
+}
+
+
 // Called when the game starts or when spawned
 void AEnemyAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	Reset();
+}
+
+void AEnemyAICharacter::SetDead()
+{
+	spawner->ReleaseEnemy(this);
+	isActive = false;
 }
 
 void AEnemyAICharacter::AttackAction()
 {
 	TArray<AActor*> overlappingActors;
+	check(attackTrigger)
 	attackTrigger->GetOverlappingActors(overlappingActors);
 
 	for (AActor* a : overlappingActors) 
@@ -31,7 +56,7 @@ void AEnemyAICharacter::AttackAction()
 
 		if (player)
 		{
-			player->TakeDamage(10.f);
+			player->TakeDamage_(10.f);
 		}
 	}
 }

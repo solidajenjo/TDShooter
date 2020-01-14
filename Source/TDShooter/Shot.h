@@ -36,11 +36,12 @@ protected:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Shot configuration")
 		float shotSpeed = 100.f;
 	
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Shot configuration")
+		float shotDamage = 40.f;
 	
 	ATDShooterPlayerController* owner = nullptr;
 
 	UParticleSystem* particle = nullptr;
 
-	UParticleSystemComponent* trail = nullptr;
 
 };
