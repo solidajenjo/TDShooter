@@ -19,17 +19,22 @@ ATDShooterPlayerController::ATDShooterPlayerController()
 
 void ATDShooterPlayerController::BeginPlay()
 {
-	character = (ATDShooterCharacter*)GetCharacter();
+	tDShooterCharacter = (ATDShooterCharacter*)GetCharacter();
 	for (size_t i = 0; i < SHOT_POOL_SIZE; ++i)
 	{
-		shotPool.push(GetWorld()->SpawnActor<AShot>(character->GetShotBP(), SHOT_POOL_WAITING_ZONE, FRotator::ZeroRotator));
+		shotPool.push(GetWorld()->SpawnActor<AShot>(tDShooterCharacter->GetShotBP(), SHOT_POOL_WAITING_ZONE, FRotator::ZeroRotator));
 	}
-
+	isDead = false;
 }
 
 void ATDShooterPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+	
+	isDead = tDShooterCharacter->lifePercent <= 0.f;
+	
+	if (isDead)
+		return;
 
 	if (rotTimer > 0.f) {
 		rotTimer -= DeltaTime;
@@ -87,7 +92,7 @@ void ATDShooterPlayerController::ManageRotation()
 	float alpha = rotTimer / rotationTime;
 	FRotator newRot = FMath::Lerp(targetRotation, originalRotation, alpha);
 
-	character->SetActorRotation(newRot);
+	tDShooterCharacter->SetActorRotation(newRot);
 }
 
 void ATDShooterPlayerController::ManageAiming()
@@ -104,8 +109,8 @@ void ATDShooterPlayerController::ManageAiming()
 	const bool bTraceComplex = false;
 	if (GetHitResultAtScreenPosition(mousePosition, ECC_Visibility, bTraceComplex, hitResult) == true)
 	{
-		hitResult.ImpactPoint.Z = character->GetActorLocation().Z;
-		FVector Forward = hitResult.ImpactPoint - character->GetActorLocation();
+		hitResult.ImpactPoint.Z = tDShooterCharacter->GetActorLocation().Z;
+		FVector Forward = hitResult.ImpactPoint - tDShooterCharacter->GetActorLocation();
 		targetRotation = UKismetMathLibrary::MakeRotFromXZ(Forward, FVector(0.f, 0.f, 1.f));
 		originalRotation = GetPawn()->GetActorRotation();
 	}	
@@ -114,11 +119,11 @@ void ATDShooterPlayerController::ManageAiming()
 void ATDShooterPlayerController::ManageMovement(float dt)
 {
 	direction.Normalize();
-	character->GetCapsuleComponent()->SetPhysicsLinearVelocity(direction * moveSpeed);
+	tDShooterCharacter->GetCapsuleComponent()->SetPhysicsLinearVelocity(direction * moveSpeed);
 	
 	if (!isShooting && direction.Size() > 0.f) // look in move direction
 	{
-		FRotator rot = character->GetCapsuleComponent()->GetComponentRotation();		
+		FRotator rot = tDShooterCharacter->GetCapsuleComponent()->GetComponentRotation();		
 		FRotator newRot = UKismetMathLibrary::MakeRotFromXZ(direction, FVector(0.f, 0.f, 1.f));
 
 		newRot = FMath::Lerp(rot, newRot, dt * 10.f);
@@ -129,7 +134,7 @@ void ATDShooterPlayerController::ManageMovement(float dt)
 
 void ATDShooterPlayerController::Shoot()
 {
-	USceneComponent* shotOrigin = character->GetShotOrigin();
+	USceneComponent* shotOrigin = tDShooterCharacter->GetShotOrigin();
 	AShot* shot = shotPool.front();
 	shot->Go(shotOrigin->GetForwardVector(), shotOrigin->GetComponentLocation());
 	shotPool.pop();

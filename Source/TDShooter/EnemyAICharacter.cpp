@@ -8,7 +8,6 @@
 #include <TDShooter\EnemySpawner.h>
 
 
-// Sets default values
 AEnemyAICharacter::AEnemyAICharacter()
 {
 	attackTrigger = CreateDefaultSubobject<UCapsuleComponent>(TEXT("ShotOrigin"));
@@ -31,7 +30,6 @@ void AEnemyAICharacter::Reset()
 }
 
 
-// Called when the game starts or when spawned
 void AEnemyAICharacter::BeginPlay()
 {
 	Super::BeginPlay();

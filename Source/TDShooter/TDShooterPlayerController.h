@@ -49,8 +49,9 @@ protected:
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Player movement")
 		float moveSpeed = 600.f;
-
-	ATDShooterCharacter* character = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ATDShooterCharacter* tDShooterCharacter = nullptr;
 
 	FRotator targetRotation;
 	FRotator originalRotation;
@@ -59,6 +60,7 @@ protected:
 	FVector direction;
 
 	bool isShooting = false;
+	bool isDead = false;
 	std::queue<AShot*> shotPool;
 };
 

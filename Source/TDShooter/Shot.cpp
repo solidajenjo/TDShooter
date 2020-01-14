@@ -9,11 +9,9 @@
 #include <TDShooter\EnemyAICharacter.h>
 
 
-// Sets default values
 AShot::AShot()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = mesh;
@@ -23,7 +21,6 @@ AShot::AShot()
 
 }
 
-// Called when the game starts or when spawned
 void AShot::BeginPlay()
 {
 	Super::BeginPlay();
@@ -35,8 +32,6 @@ void AShot::BeginPlay()
 
 	mesh->OnComponentHit.AddDynamic(this, &AShot::shotHit);
 
-	//TArray<UParticleSystemComponent> pS;
-	//GetComponents<UParticleSystemComponent>(pS);
 }
 
 void AShot::shotHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

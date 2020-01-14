@@ -24,7 +24,6 @@ class TDSHOOTER_API AEnemySpawner : public AActor
 
 	float spawnTimer = 0.f;
 
-	TSubclassOf<AEnemyAICharacter> enemyBP = nullptr;
 
 public:	
 	// Sets default values for this actor's properties
@@ -37,6 +36,9 @@ public:
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Spawn parameters")
 		float timeBetweenSpawnsReductionRate = .1f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy blueprint")
+		TSubclassOf<AEnemyAICharacter> enemyBP;
 
 protected:
 	// Called when the game starts or when spawned

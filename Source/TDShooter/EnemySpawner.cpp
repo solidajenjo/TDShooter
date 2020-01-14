@@ -9,10 +9,8 @@
 // Sets default values
 AEnemySpawner::AEnemySpawner()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	static ConstructorHelpers::FObjectFinder<UBlueprint> enemyBP_(TEXT("Blueprint'/Game/TopDownCPP/Blueprints/BP_Enemy.BP_Enemy'"));
-	enemyBP = (UClass*)enemyBP_.Object->GeneratedClass;
+
 }
 
 void AEnemySpawner::ReleaseEnemy(AEnemyAICharacter* enemy)
@@ -22,7 +20,6 @@ void AEnemySpawner::ReleaseEnemy(AEnemyAICharacter* enemy)
 	enemyPool.push(enemy);
 }
 
-// Called when the game starts or when spawned
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
@@ -43,7 +40,6 @@ void AEnemySpawner::BeginPlay()
 
 }
 
-// Called every frame
 void AEnemySpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
